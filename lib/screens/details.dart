@@ -13,7 +13,7 @@ class DetailsPage extends StatefulWidget {
 
 class _DetailsPageState extends State<DetailsPage> {
   Category? category; // allow nullable and avoid reassigning a `final`
-  late List<Meal> _meals;
+  List<Meal> _meals = [];
   List<Meal> _filteredMeals = [];
 
   bool _isLoading = true;
@@ -154,10 +154,7 @@ class _DetailsPageState extends State<DetailsPage> {
                 ],
               ),
             )
-                : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: MealGrid(meal: _filteredMeals),
-            ),
+                : MealGrid(meal: _filteredMeals),
           ),
         ],
       ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-//import '../models/category_model.dart';
 import '../models/category_modal.dart';
 import '../services/api_service.dart';
 import '../widgets/category_grid.dart';
+import '../utils/favorites_manager.dart';
 
 
 class MyHomePage extends StatefulWidget {
@@ -23,11 +23,25 @@ class _MyHomePageState extends State<MyHomePage> {
   String _searchQuery = '';
   final ApiService _apiService = ApiService();
   final TextEditingController _searchController = TextEditingController();
+  final FavoritesManager _favoritesManager = FavoritesManager();
 
   @override
   void initState() {
     super.initState();
     _loadCategoryList(n:10);
+    _favoritesManager.addListener(_onFavoritesChanged);
+  }
+
+  @override
+  void dispose() {
+    _favoritesManager.removeListener(_onFavoritesChanged);
+    super.dispose();
+  }
+
+  void _onFavoritesChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -60,6 +74,43 @@ class _MyHomePageState extends State<MyHomePage> {
               }
             },
           ),
+
+            Stack(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.favorite),
+                  tooltip: "Favorites",
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/favorites");
+                  },
+                ),
+                if (_favoritesManager.favoriteMeals.isNotEmpty)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '${_favoritesManager.favoriteMeals.length}',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
         ],
       ),
       body: _isLoading
@@ -167,4 +218,6 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
   }
+
+
 }
